@@ -1,13 +1,10 @@
 # gimp-meme-generator
-Genera un meme en GIMP
+Generate a meme with GIMP
 
-Mover meme-generator.scm a carpeta de scripts.
+Move meme-generator.scm to the scripts folder
 
-En Arch Linux es:
-`~/.gimp-2.8/scripts/`
+On Arch Linux its:
+`~/.config/GIMP/2.10/scripts/`
 
-![alt text](https://www.anony.ws/i/2015/08/23/menu.png "Menu")
+To use, open an image then click in the menu: Tools > Add Meme Text
 
-![alt text](https://www.anony.ws/i/2015/08/23/crear.png "Menu")
-
-![alt text](https://www.anony.ws/i/2015/08/23/tldr.png "Menu")

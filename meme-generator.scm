@@ -1,18 +1,20 @@
 (script-fu-register
- "script-fu-meme-generator"
- _"_Generar Meme"
- _"Genera un meme :o"
- "Eduardo Vazquez (hao)"
+ "script-fu-meme-text-generator"
+ _"_Add Meme Text"
+ _"Add border to text like memes"
+ "Jonathan Knapp, Eduardo Vazquez"
  "Public Domain"
- "2015-09-18"
+ "2020-09-05"
  ""
  SF-IMAGE      "Image" 1
- SF-STRING     "Text"               "TLDR"
- SF-ADJUSTMENT "Font size (pixels)" '(150 2 1000 1 10 0 1)
+ SF-STRING     "Text"               "CATS"
+ SF-ADJUSTMENT "Text size (pixels)" '(20 1 1000 1 10 0 1)
+ SF-ADJUSTMENT "Border ratio" '(15 1 50 1 5 0 0)
+ SF-TOGGLE "Black & White" TRUE
  )
 
-(script-fu-menu-register "script-fu-meme-generator"
-                         "<Image>/File/Create/Text")
+(script-fu-menu-register "script-fu-meme-text-generator"
+                         "<Image>/Tools")
 
 (define (gimp-image-list-count)
   (car (gimp-image-list)))
@@ -39,7 +41,7 @@
   `(map (lambda (x) (x)) ,@do-this)
   (gimp-image-undo-enable in-image))
 
-(define (script-fu-meme-generator img text size)
+(define (script-fu-meme-text-generator img text size border grey)
   (gimp-layer-hide-all img)
   (let* ((font "Impact Condensed")
       (logo-layer (car (gimp-text-fontname img -1 0 0 text 10 TRUE size PIXELS font)))
@@ -52,18 +54,22 @@
      (gimp-selection-none img)
      (script-fu-util-image-add-layers img outline-layer)
 
-     (gimp-context-set-foreground "white")
+     (if (= grey TRUE) (gimp-context-set-foreground "white"))
+     (if (= grey TRUE) (gimp-context-set-background "black"))
+     ; (gimp-context-set-foreground "white")
      (gimp-layer-set-lock-alpha logo-layer TRUE)
      (gimp-edit-fill logo-layer FOREGROUND-FILL)
 
      (gimp-edit-clear outline-layer)
      (gimp-image-select-item img CHANNEL-OP-REPLACE logo-layer)
-     (gimp-selection-grow img (/ size 10))
-     (gimp-context-set-background "black")
+     ; (gimp-selection-grow img (/ size 10))
+     (gimp-selection-grow img (* size (/ border 100)))
+     ; (gimp-context-set-background "black")
      (gimp-edit-fill outline-layer BACKGROUND-FILL)
 
      (gimp-image-merge-visible-layers img 1)
-     (gimp-layer-unhide-all img))
+     (gimp-layer-unhide-all img)
+     (gimp-selection-none img))
     (gimp-displays-flush)))
 
 ;; Debug
