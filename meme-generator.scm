@@ -9,7 +9,7 @@
  SF-IMAGE      "Image" 1
  SF-STRING     "Text"               "CATS"
  SF-ADJUSTMENT "Text size (pixels)" '(20 1 1000 1 10 0 1)
- SF-ADJUSTMENT "Border ratio" '(15 1 50 1 5 0 0)
+ SF-ADJUSTMENT "Border ratio" '(12 1 50 1 5 0 0)
  SF-TOGGLE "Black & White" TRUE
  )
 
@@ -44,7 +44,7 @@
 (define (script-fu-meme-text-generator img text size border grey)
   (gimp-layer-hide-all img)
   (let* ((font "Impact Condensed")
-      (logo-layer (car (gimp-text-fontname img -1 0 0 text 10 TRUE size PIXELS font)))
+      (logo-layer (car (gimp-text-fontname img -1 0 0 text (* size (/ border 100)) TRUE size PIXELS font)))
       (width (car (gimp-drawable-width logo-layer)))
       (height (car (gimp-drawable-height logo-layer)))
       (outline-layer (car (gimp-layer-new img width height RGBA-IMAGE text 100 NORMAL-MODE))))
@@ -56,18 +56,17 @@
 
      (if (= grey TRUE) (gimp-context-set-foreground "white"))
      (if (= grey TRUE) (gimp-context-set-background "black"))
-     ; (gimp-context-set-foreground "white")
      (gimp-layer-set-lock-alpha logo-layer TRUE)
      (gimp-edit-fill logo-layer FOREGROUND-FILL)
 
      (gimp-edit-clear outline-layer)
      (gimp-image-select-item img CHANNEL-OP-REPLACE logo-layer)
-     ; (gimp-selection-grow img (/ size 10))
      (gimp-selection-grow img (* size (/ border 100)))
-     ; (gimp-context-set-background "black")
      (gimp-edit-fill outline-layer BACKGROUND-FILL)
 
-     (gimp-image-merge-visible-layers img 1)
+     ; merge-and-crop both layers
+     (plug-in-autocrop-layer 1 img (car (gimp-image-merge-visible-layers img 1)))
+
      (gimp-layer-unhide-all img)
      (gimp-selection-none img))
     (gimp-displays-flush)))
